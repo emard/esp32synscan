@@ -61,6 +61,7 @@ async def receiver():
           udpserv.sock.sendto(res, udpserv.addr)
 
 async def main():
+    print("UART<->UDP bridge started")
     asyncio.create_task(udpserv.serve(udpcb, '0.0.0.0', port))
     # asyncio.create_task(sender())
     asyncio.create_task(receiver())
@@ -68,13 +69,13 @@ async def main():
     while True:
         await asyncio.sleep(1)
 
-def test():
+def run():
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
         print('Interrupted')
     finally:
         asyncio.new_event_loop()
-        print('asyncuart.test() to run again.')
+        print('uartudp.run() to run again.')
 
-test()
+run()

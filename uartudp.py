@@ -1,6 +1,7 @@
 # usage
-# echo "message" | socat - udp:192.168.48.32:11880
-# ack
+# UDP: send "message"
+# UART: type "reply" CTRL-J within 60 seconds after "message"
+# echo "message" | socat -t 60 - udp:192.168.48.32:11880
 
 # runs both UDP and UART in async mode
 
@@ -25,8 +26,10 @@ udpserv = UDPServer()
 # https://github.com/perbu/dgram
 
 def udpcb(msg, adr):
-    print('Got:', msg)
-    return 'ack\n'.encode('ascii')
+    print('UDP->UART:', msg)
+    swriter.write(msg)
+    return None
+    #return 'ack\n'.encode('ascii')
 
 #def udp_main():
 #    s = UDPServer()
@@ -54,7 +57,9 @@ async def receiver():
     while True:
         # print('waiting on receive')
         res = await sreader.readline()
-        print('Received', res)
+        if udpserv.addr:
+          print('UART->UDP:', res)
+          udpserv.sock.sendto(res, udpserv.addr)
 
 async def main():
     asyncio.create_task(udpserv.serve(udpcb, '0.0.0.0', port))

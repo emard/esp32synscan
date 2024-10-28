@@ -28,14 +28,13 @@ udpserv = UDPServer()
 def udpcb(msg, adr):
     print('UDP->UART:', msg)
     swriter.write(msg)
-    return None
+    # if serial data were available already,
+    # we could reply instantly
     #return 'ack\n'.encode('ascii')
+    # but 9600 baud is slow
+    return None
 
-#def udp_main():
-#    s = UDPServer()
-#    l = asyncio.get_event_loop()
-#    l.run_until_complete(s.serve(cb, '0.0.0.0', port))
-
+# not used
 async def sender():
     print('started sender loop')
     while True:
@@ -53,9 +52,9 @@ async def sender():
         await asyncio.sleep(10)
 
 async def receiver():
-    print('started receiver loop')
+    #print('started receiver loop')
     while True:
-        # print('waiting on receive')
+        #print('waiting on receive')
         res = await sreader.readline()
         if udpserv.addr:
           print('UART->UDP:', res)
@@ -63,7 +62,7 @@ async def receiver():
 
 async def main():
     asyncio.create_task(udpserv.serve(udpcb, '0.0.0.0', port))
-    asyncio.create_task(sender())
+    # asyncio.create_task(sender())
     asyncio.create_task(receiver())
     
     while True:

@@ -18,8 +18,8 @@ from micropython import const
 # UART2      2     GPIO16 GPIO17
 
 BAUD=const(9600)
-TX=const(16)
-RX=const(17)
+TX=const(17)
+RX=const(16)
 TIMEOUT_ms=const(20)
 buf = bytearray(1024)
 uart=UART(2,BAUD,tx=TX,rx=RX,timeout=TIMEOUT_ms)

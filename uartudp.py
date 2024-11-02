@@ -5,7 +5,7 @@
 
 # runs both UDP and UART in async mode
 
-from dgram import UDPServer
+from dgram import UDPServer # https://github.com/perbu/dgram
 import uasyncio as asyncio
 from machine import UART,Pin
 from micropython import const
@@ -20,16 +20,15 @@ from micropython import const
 BAUD=const(9600)
 TX=const(16)
 RX=const(17)
-uart=UART(2,BAUD,tx=TX,rx=RX,timeout=0)
+TIMEOUT_ms=const(10)
+buf = bytearray(1024)
+uart=UART(2,BAUD,tx=TX,rx=RX,timeout=TIMEOUT_ms)
 swriter=asyncio.StreamWriter(uart, {})
 sreader=asyncio.StreamReader(uart)
 
 port=11880
 udpserv=UDPServer()
-
 led=Pin(2,Pin.OUT)
-
-# https://github.com/perbu/dgram
 
 def udpcb(msg, adr):
     led(1)
@@ -59,20 +58,32 @@ async def sender():
         await swriter.drain()
         await asyncio.sleep(10)
 
-async def receiver():
+async def receiver_defunct():
     #print('started receiver loop')
     while True:
         #print('waiting on receive')
         res = await sreader.readline()
         led(1)
         if udpserv.addr:
-          print('UART->UDP:', res)
+          print('UART->UDP:',res)
           udpserv.sock.sendto(res, udpserv.addr)
         led(0)
 
+async def receiver():
+    #print('started receiver loop')
+    while True:
+        #print('waiting on receive')
+        len = await sreader.readinto(buf)
+        led(1)
+        if udpserv.addr:
+          print('UART->UDP:',buf[:len])
+          udpserv.sock.sendto(buf[:len], udpserv.addr)
+        led(0)
+
 async def main():
-    print("TX=",TX,"RX=",RX,"BAUD=",BAUD,"UART<->UDP bridge started")
-    print("echo message | socat -t 60 - udp:192.168.48.32:11880")
+    print("TX=",TX,"RX=",RX,"BAUD=",BAUD,"TIMEOUT_ms=",TIMEOUT_ms,"UART<->UDP bridge started")
+    print('echo -ne ":e1\\r" | socat -t 60 - udp:192.168.48.32:11880')
+    print(":e1\\r=0210A1\\r\\n")
     asyncio.create_task(udpserv.serve(udpcb, '0.0.0.0', port))
     # asyncio.create_task(sender())
     asyncio.create_task(receiver())

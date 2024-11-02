@@ -7,7 +7,8 @@
 
 from dgram import UDPServer
 import uasyncio as asyncio
-from machine import UART
+from machine import UART,Pin
+from micropython import const
 
 # The table below specifies the RX and TX pins
 # for each of the three UART ports available in ESP32.
@@ -16,22 +17,29 @@ from machine import UART
 # UART1            GPIO9  GPIO10 requires reassignment of pins
 # UART2      2     GPIO16 GPIO17
 
-uart = UART(2, 9600, timeout=0)
-swriter = asyncio.StreamWriter(uart, {})
-sreader = asyncio.StreamReader(uart)
+BAUD=const(9600)
+TX=const(16)
+RX=const(17)
+uart=UART(2,BAUD,tx=TX,rx=RX,timeout=0)
+swriter=asyncio.StreamWriter(uart, {})
+sreader=asyncio.StreamReader(uart)
 
 port=11880
-udpserv = UDPServer()
+udpserv=UDPServer()
+
+led=Pin(2,Pin.OUT)
 
 # https://github.com/perbu/dgram
 
 def udpcb(msg, adr):
+    led(1)
     print('UDP->UART:', msg)
     swriter.write(msg)
     # if serial data were available already,
     # we could reply instantly
     #return 'ack\n'.encode('ascii')
     # but 9600 baud is slow
+    led(0)
     return None
 
 # not used
@@ -56,12 +64,15 @@ async def receiver():
     while True:
         #print('waiting on receive')
         res = await sreader.readline()
+        led(1)
         if udpserv.addr:
           print('UART->UDP:', res)
           udpserv.sock.sendto(res, udpserv.addr)
+        led(0)
 
 async def main():
-    print("UART<->UDP bridge started")
+    print("TX=",TX,"RX=",RX,"BAUD=",BAUD,"UART<->UDP bridge started")
+    print("echo message | socat -t 60 - udp:192.168.48.32:11880")
     asyncio.create_task(udpserv.serve(udpcb, '0.0.0.0', port))
     # asyncio.create_task(sender())
     asyncio.create_task(receiver())
@@ -76,6 +87,5 @@ def run():
         print('Interrupted')
     finally:
         asyncio.new_event_loop()
-        print('uartudp.run() to run again.')
-
+        #print('uartudp.run() to run again.')
 run()

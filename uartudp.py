@@ -20,17 +20,19 @@ from micropython import const
 BAUD=const(9600)
 TX=const(17)
 RX=const(16)
-TIMEOUT_ms=const(20)
-buf = bytearray(1024)
+TIMEOUT_ms=const(0)
+buf = bytearray(256)
 uart=UART(2,BAUD,tx=TX,rx=RX,timeout=TIMEOUT_ms)
 swriter=asyncio.StreamWriter(uart, {})
 sreader=asyncio.StreamReader(uart)
+pos=0
 
 port=11880
 udpserv=UDPServer()
 led=Pin(2,Pin.OUT)
 
 def udpcb(msg, adr):
+    #global pos
     led(1)
     print('UDP->UART:', msg)
     swriter.write(msg)
@@ -39,6 +41,7 @@ def udpcb(msg, adr):
     #return 'ack\n'.encode('ascii')
     # but 9600 baud is slow
     led(0)
+    #pos=0
     return None
 
 # not used
@@ -58,7 +61,7 @@ async def sender():
         await swriter.drain()
         await asyncio.sleep(10)
 
-async def receiver():
+async def receiver1():
     #print('started receiver loop')
     while True:
         #print('waiting on receive')
@@ -69,14 +72,39 @@ async def receiver():
           udpserv.sock.sendto(buf[:len], udpserv.addr)
         led(0)
 
+async def receiver2():
+    global pos
+    #print('started receiver loop')
+    pos=0
+    mv=memoryview(buf)
+    while True:
+        #print('waiting on receive')
+        n=await sreader.readinto(mv[pos:])
+        if pos+n<len(buf):
+          pos+=n
+        else:
+          pos=0
+        led(1)
+        #if udpserv.addr:
+        if 1:
+          r1 = buf[:pos].find(b"\r")
+          if r1>0:
+            r2 = buf[r1+1:pos].find(b"\r")
+            if r2>0:
+              print('UART->UDP:',buf[:r1+2+r2])
+              udpserv.sock.sendto(buf[:r1+2+r2], udpserv.addr)
+              pos = 0
+        led(0)
+
 async def main():
     print("Connect RJ-11 4-pin or RJ-12 6-pin STRAIGHT cable")
     print("TX=",TX,"RX=",RX,"BAUD=",BAUD,"TIMEOUT_ms=",TIMEOUT_ms,"UART<->UDP bridge started")
-    print('echo -ne ":e1\\r" | socat -t 60 - udp:192.168.48.32:11880')
-    print(":e1\\r=0210A1\\r\\n")
+    print('echo -ne ":e1\\r" | socat -t 1 - udp:192.168.48.32:11880')
+    print(":e1\\r=0210A1\\r")
     asyncio.create_task(udpserv.serve(udpcb, '0.0.0.0', port))
-    # asyncio.create_task(sender())
-    asyncio.create_task(receiver())
+    #asyncio.create_task(sender())
+    #asyncio.create_task(receiver1())
+    asyncio.create_task(receiver2())
     
     while True:
         await asyncio.sleep(1)

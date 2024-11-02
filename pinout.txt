@@ -1,0 +1,34 @@
+From GTi manual
+
+Looking at female RJ-12 socket on the mount:
+   ____
+---    ---
+| 654321 |
+----------
+
+1 blue   N.C.
+2 yellow TX       (3.3V) (mount receives)
+3 green  Vpp+     ( 12V)
+4 red    RX       (3.3V) (mount sends)
+5 black  GND
+6 white  Reserved (3.3V)
+
+RX/TX roles on the mount are swapped and
+actually indicate RX/TX on remote end
+
+https://stargazerslounge.com/topic/239925-skywatcher-heritage-virtuoso-controlled-via-bluetooth/page/6/
+Another way to test is to connect to the mount using a terminal program
+9600,8,n,1 and type:
+
+:e1
+
+Typing these three characters plus a ENTER or CTRL-M "\r" should
+echo typed ":e1\r" and produce the response "=0210A\r" from the mount.
+
+=0210A
+
+The working serial cable connects using these parameters:
+Baud rate 9600
+Data bits=8, Stop bits=1, Parity=None
+Set chars: Eof=0x00, Error=0x00, Break=0x00, Event=0x00, Xon=0x11, Xoff=0x13
+Handflow: ControlHandShake=(), FlowReplace=(XOFF_CONTINUE), XonLimit=2048, XoffLimit=512 

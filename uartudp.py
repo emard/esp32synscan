@@ -20,7 +20,7 @@ from micropython import const
 BAUD=const(9600)
 TX=const(16)
 RX=const(17)
-TIMEOUT_ms=const(10)
+TIMEOUT_ms=const(20)
 buf = bytearray(1024)
 uart=UART(2,BAUD,tx=TX,rx=RX,timeout=TIMEOUT_ms)
 swriter=asyncio.StreamWriter(uart, {})
@@ -81,6 +81,7 @@ async def receiver():
         led(0)
 
 async def main():
+    print("Connect RJ-11 4-pin or RJ-12 6-pin STRAIGHT cable")
     print("TX=",TX,"RX=",RX,"BAUD=",BAUD,"TIMEOUT_ms=",TIMEOUT_ms,"UART<->UDP bridge started")
     print('echo -ne ":e1\\r" | socat -t 60 - udp:192.168.48.32:11880')
     print(":e1\\r=0210A1\\r\\n")

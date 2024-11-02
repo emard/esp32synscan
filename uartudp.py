@@ -58,17 +58,6 @@ async def sender():
         await swriter.drain()
         await asyncio.sleep(10)
 
-async def receiver_defunct():
-    #print('started receiver loop')
-    while True:
-        #print('waiting on receive')
-        res = await sreader.readline()
-        led(1)
-        if udpserv.addr:
-          print('UART->UDP:',res)
-          udpserv.sock.sendto(res, udpserv.addr)
-        led(0)
-
 async def receiver():
     #print('started receiver loop')
     while True:

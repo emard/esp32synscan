@@ -25,14 +25,12 @@ buf = bytearray(256)
 uart=UART(2,BAUD,tx=TX,rx=RX,timeout=TIMEOUT_ms)
 swriter=asyncio.StreamWriter(uart, {})
 sreader=asyncio.StreamReader(uart)
-pos=0
 
 port=11880
 udpserv=UDPServer()
 led=Pin(2,Pin.OUT)
 
 def udpcb(msg, adr):
-    #global pos
     led(1)
     print('UDP->UART:', msg)
     swriter.write(msg)
@@ -41,7 +39,6 @@ def udpcb(msg, adr):
     #return 'ack\n'.encode('ascii')
     # but 9600 baud is slow
     led(0)
-    #pos=0
     return None
 
 # not used
@@ -61,6 +58,8 @@ async def sender():
         await swriter.drain()
         await asyncio.sleep(10)
 
+# uses only timeout to delimit UDP
+# needs timeout 20 ms
 async def receiver1():
     #print('started receiver loop')
     while True:
@@ -72,29 +71,50 @@ async def receiver1():
           udpserv.sock.sendto(buf[:len], udpserv.addr)
         led(0)
 
+# receive serial stream from "=" to "\r", send as UDP
+# needs timeout 20 ms
 async def receiver2():
-    global pos
     #print('started receiver loop')
     pos=0
     mv=memoryview(buf)
     while True:
         #print('waiting on receive')
         n=await sreader.readinto(mv[pos:])
+        led(1)
         if pos+n<len(buf):
           pos+=n
         else:
           pos=0
-        led(1)
-        #if udpserv.addr:
-        if 1:
-          r1 = buf[:pos].find(b"\r")
-          if r1>0:
-            r2 = buf[r1+1:pos].find(b"\r")
-            if r2>0:
-              print('UART->UDP:',buf[:r1+2+r2])
-              udpserv.sock.sendto(buf[:r1+2+r2], udpserv.addr)
-              pos = 0
+        r1 = buf[:pos].find(b"=")
+        if r1>=0:
+          r2 = buf[r1+1:pos].find(b"\r")
+          #print(buf[:pos],r1,r2)
+          if r2>=0:
+            if udpserv.addr:
+              print('UART->UDP:',buf[r1:r1+2+r2])
+              udpserv.sock.sendto(buf[r1:r1+2+r2], udpserv.addr)
+            pos = 0
         led(0)
+
+# receive serial stream from "=" to "\r", send as UDP
+# works with timeout 0
+async def receiver3():
+  #print('started receiver loop')
+  line=b""
+  while True:
+    #print('waiting on receive')
+    n=await sreader.readinto(buf)
+    led(1)
+    b=buf[:n].splitlines(b"\r")
+    for x in b:
+      line+=x
+      r1=line.find(b"=")
+      if r1>=0 and line[-1:]==b"\r":
+        if udpserv.addr:
+          print('UART->UDP:',line[r1:])
+          udpserv.sock.sendto(line[r1:], udpserv.addr)
+        line=b""
+    led(0)
 
 async def main():
     print("Connect RJ-11 4-pin or RJ-12 6-pin STRAIGHT cable")
@@ -104,7 +124,8 @@ async def main():
     asyncio.create_task(udpserv.serve(udpcb, '0.0.0.0', port))
     #asyncio.create_task(sender())
     #asyncio.create_task(receiver1())
-    asyncio.create_task(receiver2())
+    #asyncio.create_task(receiver2())
+    asyncio.create_task(receiver3())
     
     while True:
         await asyncio.sleep(1)

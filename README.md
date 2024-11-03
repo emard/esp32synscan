@@ -81,3 +81,22 @@ use lftp
     lftp> mput uartudp.py dgram.py
 
 In file "main.py" let it execute uartudp.py to start on boot.
+
+# Firmware bugfix
+
+Motor firmware version 2.16.A1 is the latest but has
+problem with SynScan application on android.
+After each connect user must enable "Auxiliary Encoder"
+otherwise mount will start turning around azimuth axis
+and will never stop by itself (user should press cancel to stop).
+
+To fix this in function "udpcb" one message is rewritten
+
+    :W2050000\r -> :W2040000\r
+
+Synscan sends some AT command probably for ESP AT
+firmware which should not reach motor firmware so
+"udpcb" rewrites this AT command as ":e1\\r"
+this command returns motor firmware version
+
+    AT+CWMODE_CUR?\r\n -> :e1\r

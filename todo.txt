@@ -1,0 +1,13 @@
+[x] swap tx/rx pins on RJ-12 connector for default UART2
+[ ] upload to mip install
+[ ] bluetooth joystick key remap to fit synscan pro
+    if setup right then joystick hat can drive axis even if
+    touchscreen cursors are not displayed (this is how
+    darfon joystick on wire works)
+[ ] stability, esp32 comm sometimes gets stuck and needs reboot
+[ ] reconnectability, many retries needed
+    after few connect/disconnects esp32 is stuck and needs reboot
+    in this state esp32 doesn't respond to socat command from PC
+    but works after reboot
+[ ] esp32 bluetooth access to joystick so it can work
+    independet of synscan

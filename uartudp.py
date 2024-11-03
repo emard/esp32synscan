@@ -30,14 +30,25 @@ port=11880
 udpserv=UDPServer()
 led=Pin(2,Pin.OUT)
 
-def udpcb(msg, adr):
+# motor firmware 2.16.A1 and/or PCB have bug
+# with primariy encoder on axis 2 
+# on synscan pro app after each connect user
+# should select Advanced -> Auxiliary Encoder
+# rewriting encoder select command fixes this bug
+# ":W2050000\r" -> ":W2040000\r"
+# AT command should not reach firmware
+# rewrite it as ":e1\r"
+def udpcb(msg,adr):
     led(1)
-    print('UDP->UART:', msg)
-    swriter.write(msg)
-    # if serial data were available already,
-    # we could reply instantly
-    #return 'ack\n'.encode('ascii')
-    # but 9600 baud is slow
+    print('UDP->UART:',msg)
+    if msg==b":W2050000\r":
+      print("rewritten as :W2040000 (bugfix)")
+      swriter.write(b":W2040000\r")
+    elif msg==b"AT+CWMODE_CUR?\r\n":
+      print("rewritten as :e1 (bugfix)")
+      swriter.write(b":e1\r")
+    else:
+      swriter.write(msg)
     led(0)
     return None
 

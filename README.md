@@ -92,16 +92,15 @@ actually indicate RX/TX on remote end
 
 # WARNING WARNING WARNING
 
-There exist different RJ-11 and RJ-12 cables
-for telephones, known as [straight and cross RJ-11 RJ-12](/doc/straight-vs-cross-cable.pdf) 
-For the phones it does not matter but here it matters!
+There are different RJ-11 and RJ-12 cables,
+wired as [straight and cross](/doc/straight-vs-cross-cable.pdf) 
+For the telephones it does not matter but here it matters!
 
-STANDARD PHONE CABLE MAY NOT BE
-SUITABLE. USE ONLY STRAIGHT WIRED 4-PIN RJ-11 or
-STRAIGHT WIRED 6-PIN RJ-12. IF A CROSS WIRED CABLE
-IS USED THEN 12V WILL FRY ELECTRONICS IN THE MOUNT
-AND ESP32. 
-
+STANDARD PHONE CROSS CABLE MAY NOT BE SUITABLE.
+USE ONLY STRAIGHT WIRED 4-PIN RJ-11 or
+STRAIGHT WIRED 6-PIN RJ-12.
+IF A CROSS WIRED CABLE IS USED THEN 12V WILL FRY
+ELECTRONICS IN THE MOUNT AND ESP32.
 
 # Test serial connection
 

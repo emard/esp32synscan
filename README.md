@@ -140,7 +140,6 @@ use lftp
 In file "main.py" let it execute uartudp.py to start on boot.
 
     import mip
-    mip.install("asyncio")
     mip.install("esp32ecp5")
 
 from "emard/esp32ecp5" "uftpd.py" and "ecp5setup.py" are useful

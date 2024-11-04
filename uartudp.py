@@ -31,7 +31,8 @@ port=11880
 udpserv=UDPServer()
 led=Pin(2,Pin.OUT)
 
-valid_str=re.compile("^[\r:=!0-9a-zA-Z]+$")
+valid_uart2udp=re.compile("^[\r=0-9A-F]+$")
+valid_udp2uart=re.compile("^[\r:!0-9a-zA-Z]+$")
 
 # motor firmware 2.16.A1 and/or PCB have bug
 # with primariy encoder on axis 2 
@@ -51,7 +52,7 @@ def udpcb(msg,adr):
       print("rewritten as :e1 (bugfix)")
       swriter.write(b":e1\r")
     else:
-      if re.search(valid_str,msg):
+      if re.search(valid_udp2uart,msg):
         swriter.write(msg)
     led(0)
     return None
@@ -143,7 +144,7 @@ async def receiver3():
         line=line[r2+1:]
       else:
         #print("junk",line)
-        if not re.search(valid_str,line):
+        if not re.search(valid_uart2udp,line):
           line=b""
     led(0)
 

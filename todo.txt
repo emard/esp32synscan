@@ -15,5 +15,5 @@
 [ ] esp32 bluetooth access to joystick so it can work
     independet of synscan
 [ ] pic of the PCB
-[ ] schem
+[ ] schematics maybe UTF-8 block art
 

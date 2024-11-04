@@ -8,6 +8,12 @@ SynScan WiFi dongle.
 
 # Synscan Parameters
 
+Create access point on android or wifi router to which ESP32 will
+connect as client, default is:
+
+    ssid: syn scan
+    pass: syn scan
+
 Tested with synscan 2.5.2
 
     Settings -> Connect Settings ->
@@ -17,13 +23,14 @@ Tested with synscan 2.5.2
 
 # Principle of operation
 
-When ESP32 receives UDP packet at port 11880
-it sends it via UART 9600,8,n,1
+ESP32 listens to UDP packets at port 11880
+each packet received is checked with regex
+if seems valid then ESP32 sends it via UART 9600,8,n,1
 
-When data are received at UART and 20 ms
-of idle UART passes, send data over UDP
+When data are received at UART ESP32 checks
+validity and if valid sends over UDP
 back to host IP from which recent UDP
-was receiver.
+was received.
 
 # Electrical
 

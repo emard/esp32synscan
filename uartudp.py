@@ -44,16 +44,16 @@ valid_udp2uart=re.compile("^[\r:!0-9a-zA-Z]+$")
 # rewrite it as ":e1\r"
 def udpcb(msg,adr):
     led(1)
-    print('UDP->UART:',msg)
     if msg==b":W2050000\r":
-      print("rewritten as :W2040000 (bugfix)")
       swriter.write(b":W2040000\r")
+      print("rewritten as :W2040000 (bugfix)")
     elif msg==b"AT+CWMODE_CUR?\r\n":
-      print("rewritten as :e1 (bugfix)")
       swriter.write(b":e1\r")
+      print("rewritten as :e1 (bugfix)")
     else:
       if re.search(valid_udp2uart,msg):
         swriter.write(msg)
+    print('UDP->UART:',msg)
     led(0)
     return None
 
@@ -137,8 +137,8 @@ async def receiver3():
       r2=line[r1:].find(b"\r")
       if r2>r1:
         if udpserv.addr:
-          print('UART->UDP:',line[r1:r2+1])
           udpserv.sock.sendto(line[r1:r2+1], udpserv.addr)
+          print('UART->UDP:',line[r1:r2+1])
         else:
           print("no host")
         line=line[r2+1:]

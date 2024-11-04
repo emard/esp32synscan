@@ -4,6 +4,9 @@
     if setup right then joystick hat can drive axis even if
     touchscreen cursors are not displayed (this is how
     darfon joystick on wire works)
+[ ] the comm is still not smooth, often times joystick is like
+    "kept pressed" even after user has released it, goto position
+    is paused and resumed and similar
 [ ] stability, esp32 comm sometimes gets stuck and needs reboot
 [ ] reconnectability, many retries needed
     after few connect/disconnects esp32 is stuck and needs reboot
@@ -11,3 +14,6 @@
     but works after reboot
 [ ] esp32 bluetooth access to joystick so it can work
     independet of synscan
+[ ] pic of the PCB
+[ ] schem
+

@@ -48,6 +48,7 @@ RJ12 cable to ESP32 RX2/TX2 pins.
 # Test connection
 
 Looking at female RJ-12 socket on the mount:
+
        ____
     ---    ---
     | 654321 |

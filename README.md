@@ -45,12 +45,16 @@ To fix this in function "udpcb" one message is rewritten
 
     :W2050000\r -> :W2040000\r
 
-Synscan sends some AT command probably for ESP AT
-firmware which should not reach motor firmware so
+Second fix is more to prevent sending junk to
+motor firmware which is easy to crash.
+
+Synscan sends some AT command probably for its
+original SynScan WiFi ESP8266 AT firmware.
+This AT command should not reach motor firmware so
 "udpcb" rewrites this AT command as ":e1\\r"
-to this command it returns motor firmware version
-which is not really AT response but synscan
-accepts it.
+and to this command motor firmware responds with
+version number which is not really response to AT
+command but synscan accepts it.
 
     AT+CWMODE_CUR?\r\n -> :e1\r
 

@@ -93,7 +93,7 @@ actually indicate RX/TX on remote end
 # WARNING WARNING WARNING
 
 There are different RJ-11 and RJ-12 cables,
-wired as [straight and cross](/doc/straight-vs-cross-cable.pdf) 
+with [straight and cross wiring](/doc/straight-vs-cross-cable.pdf).
 For the telephones it does not matter but here it matters!
 
 STANDARD PHONE CROSS CABLE MAY NOT BE SUITABLE.

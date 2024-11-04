@@ -41,7 +41,7 @@ After each connect user must enable "Auxiliary Encoder"
 otherwise mount will start turning around azimuth axis
 and will never stop by itself (user should press cancel to stop).
 
-To fix this in function "udpcb" one message is rewritten
+To fix this in function "udpcb()" one message is rewritten
 
     :W2050000\r -> :W2040000\r
 
@@ -51,7 +51,7 @@ motor firmware which is easy to crash.
 Synscan sends some AT command probably for its
 original SynScan WiFi ESP8266 AT firmware.
 This AT command should not reach motor firmware so
-"udpcb" rewrites this AT command as ":e1\\r"
+"udpcb()" function rewrites this AT command as ":e1\\r"
 and to this command motor firmware responds with
 version number which is not really response to AT
 command but synscan accepts it.

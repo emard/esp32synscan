@@ -6,6 +6,15 @@ SynScan Virtuoso 90 Heritage telescope mount
 that should be more stable than original
 SynScan WiFi dongle.
 
+# Synscan Parameters
+
+Tested with synscan 2.5.2
+
+    Settings -> Connect Settings ->
+
+    Resend Tries:        0
+    Read Timeout (ms): 300 
+
 # Principle of operation
 
 When ESP32 receives UDP packet at port 11880

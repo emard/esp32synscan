@@ -99,6 +99,22 @@ use lftp
 
 In file "main.py" let it execute uartudp.py to start on boot.
 
+    import mip
+    mip.install("asyncio")
+    mip.install("esp32ecp5")
+
+from "emard/esp32ecp5" "uftpd.py" and "ecp5setup.py" are useful
+to config wifi and uploads via ftp.
+
+In "ecp5setup.py" add last line generated for generated "main.py"
+to autostart "uartudp"
+
+    import uartudp
+
+from "https://github.com/perbu/dgram" project I slightly modified
+"dgram.py" for the UDP server to expose "addr" so serial receiver
+can "know" to whom it should send data received from uart.
+
 # Firmware bugfix
 
 Motor firmware version 2.16.A1 is the latest but has
@@ -118,22 +134,3 @@ this command returns motor firmware version
 
     AT+CWMODE_CUR?\r\n -> :e1\r
 
-# Dependencies
-
-Bring ESP32 micropython online then
-
-    import mip
-    mip.install("asyncio")
-    mip.install("esp32ecp5")
-
-from "emard/esp32ecp5" "uftpd.py" and "ecp5setup.py" are useful
-to config wifi and uploads via ftp.
-
-In "ecp5setup.py" add last line generated for generated "main.py"
-to autostart "uartudp"
-
-    import uartudp
-
-from "https://github.com/perbu/dgram" project I slightly modified
-"dgram.py" for the UDP server to expose "addr" so serial receiver
-can "know" to whom it should send data received from uart.

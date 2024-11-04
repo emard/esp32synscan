@@ -33,6 +33,27 @@ validity and if valid then ESP32 sends data
 over UDP back to host IP from which recent UDP
 was received.
 
+# Firmware bugfix
+
+Motor firmware version 2.16.A1 is the latest but has
+problem with SynScan application on android.
+After each connect user must enable "Auxiliary Encoder"
+otherwise mount will start turning around azimuth axis
+and will never stop by itself (user should press cancel to stop).
+
+To fix this in function "udpcb" one message is rewritten
+
+    :W2050000\r -> :W2040000\r
+
+Synscan sends some AT command probably for ESP AT
+firmware which should not reach motor firmware so
+"udpcb" rewrites this AT command as ":e1\\r"
+to this command it returns motor firmware version
+which is not really AT response but synscan
+accepts it.
+
+    AT+CWMODE_CUR?\r\n -> :e1\r
+
 # Electrical
 
 There is 12->3.3V switching converter onboard (Canton Power).
@@ -130,23 +151,4 @@ to autostart "uartudp"
 from "https://github.com/perbu/dgram" project I slightly modified
 "dgram.py" for the UDP server to expose "addr" so serial receiver
 can "know" to whom it should send data received from uart.
-
-# Firmware bugfix
-
-Motor firmware version 2.16.A1 is the latest but has
-problem with SynScan application on android.
-After each connect user must enable "Auxiliary Encoder"
-otherwise mount will start turning around azimuth axis
-and will never stop by itself (user should press cancel to stop).
-
-To fix this in function "udpcb" one message is rewritten
-
-    :W2050000\r -> :W2040000\r
-
-Synscan sends some AT command probably for ESP AT
-firmware which should not reach motor firmware so
-"udpcb" rewrites this AT command as ":e1\\r"
-this command returns motor firmware version
-
-    AT+CWMODE_CUR?\r\n -> :e1\r
 

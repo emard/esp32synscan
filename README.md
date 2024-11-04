@@ -103,14 +103,20 @@ this command returns motor firmware version
 
 # Dependencies
 
-from "emard/esp32ecp5" project "uftpd.py" and "ecp5setup.py" are useful
-to config wifi and upload via ftp.
+Bring ESP32 micropython online then
+
+    import mip
+    mip.install("asyncio")
+    mip.install("esp32ecp5")
+
+from "emard/esp32ecp5" "uftpd.py" and "ecp5setup.py" are useful
+to config wifi and uploads via ftp.
+
+In "ecp5setup.py" add last line generated for generated "main.py"
+to autostart "uartudp"
+
+    import uartudp
 
 from "https://github.com/perbu/dgram" project I slightly modified
 "dgram.py" for the UDP server to expose "addr" so serial receiver
 can "know" to whom it should send data received from uart.
-
-
-
-
-

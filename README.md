@@ -100,3 +100,17 @@ firmware which should not reach motor firmware so
 this command returns motor firmware version
 
     AT+CWMODE_CUR?\r\n -> :e1\r
+
+# Dependencies
+
+from "emard/esp32ecp5" project "uftpd.py" and "ecp5setup.py" are useful
+to config wifi and upload via ftp.
+
+from "https://github.com/perbu/dgram" project I slightly modified
+"dgram.py" for the UDP server to expose "addr" so serial receiver
+can "know" to whom it should send data received from uart.
+
+
+
+
+

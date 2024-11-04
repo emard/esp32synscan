@@ -9,6 +9,7 @@ from dgram import UDPServer # https://github.com/perbu/dgram
 import uasyncio as asyncio
 from machine import UART,Pin
 from micropython import const
+import re
 
 # The table below specifies the RX and TX pins
 # for each of the three UART ports available in ESP32.
@@ -30,6 +31,8 @@ port=11880
 udpserv=UDPServer()
 led=Pin(2,Pin.OUT)
 
+valid_str=re.compile("^[\r:=!0-9a-zA-Z]+$")
+
 # motor firmware 2.16.A1 and/or PCB have bug
 # with primariy encoder on axis 2 
 # on synscan pro app after each connect user
@@ -48,7 +51,8 @@ def udpcb(msg,adr):
       print("rewritten as :e1 (bugfix)")
       swriter.write(b":e1\r")
     else:
-      swriter.write(msg)
+      if re.search(valid_str,msg):
+        swriter.write(msg)
     led(0)
     return None
 
@@ -108,6 +112,9 @@ async def receiver2():
         led(0)
 
 # receive serial stream from "=" to "\r", send as UDP
+# tries to get rid of line junk
+# line is half duplex
+# sending while receiving results in junk received
 # works with timeout 0
 async def receiver3():
   #print('started receiver loop')
@@ -116,15 +123,28 @@ async def receiver3():
     #print('waiting on receive')
     n=await sreader.readinto(buf)
     led(1)
+    #print("UART read",n)
     b=buf[:n].splitlines(b"\r")
     for x in b:
-      line+=x
+      if line!=b"":
+        line+=x
+      else:
+        r0=x.find(b"=")
+        if r0>=0:
+          line+=x[r0:]
       r1=line.find(b"=")
-      if r1>=0 and line[-1:]==b"\r":
+      r2=line[r1:].find(b"\r")
+      if r2>r1:
         if udpserv.addr:
-          print('UART->UDP:',line[r1:])
-          udpserv.sock.sendto(line[r1:], udpserv.addr)
-        line=b""
+          print('UART->UDP:',line[r1:r2+1])
+          udpserv.sock.sendto(line[r1:r2+1], udpserv.addr)
+        else:
+          print("no host")
+        line=line[r2+1:]
+      else:
+        #print("junk",line)
+        if not re.search(valid_str,line):
+          line=b""
     led(0)
 
 async def main():

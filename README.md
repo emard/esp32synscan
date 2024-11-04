@@ -23,18 +23,19 @@ Tested with synscan 2.5.2
 
 # Principle of operation
 
-ESP32 listens to UDP packets at port 11880
-each packet received is checked with regex
-if seems valid then ESP32 sends it via UART 9600,8,n,1
+ESP32 listens to UDP packets at port 11880.
+Each packet received is checked with regex.
+If it seems valid then ESP32 sends it via
+UART. Uart parameters are 9600,8,n,1.
 
 When data are received at UART ESP32 checks
-validity and if valid sends over UDP
-back to host IP from which recent UDP
+validity and if valid then ESP32 sends data
+over UDP back to host IP from which recent UDP
 was received.
 
 # Electrical
 
-There is 12->3.3V converter onboard.
+There is 12->3.3V switching converter onboard (Canton Power).
 RJ-12 plug can't guarantee that GND makes
 connection before other pins.
 There should be 3.6V zener diodes to protect
@@ -45,7 +46,7 @@ In the mount manual see RJ12 pinout.
 Conenct RJ12 RX/TX with short straight
 RJ12 cable to ESP32 RX2/TX2 pins.
 
-# Test connection
+# Connection
 
 Looking at female RJ-12 socket on the mount:
 
@@ -63,6 +64,21 @@ Looking at female RJ-12 socket on the mount:
 
 RX/TX roles on the mount are swapped and
 actually indicate RX/TX on remote end
+
+# WARNING WARNING WARNING
+
+There exist different RJ-11 and RJ-12 cables
+for telephones, known as [straight and cross RJ-11 RJ-12](/doc/straight-vs-cross-cable.pdf) 
+For the phones it does not matter but here it matters!
+
+STANDARD PHONE CABLE MAY NOT BE
+SUITABLE. USE ONLY STRAIGHT WIRED 4-PIN RJ-11 or
+STRAIGHT WIRED 6-PIN RJ-12. IF A CROSS WIRED CABLE
+IS USED THEN 12V WILL FRY ELECTRONICS IN THE MOUNT
+AND ESP32. 
+
+
+# Test serial connection
 
 https://stargazerslounge.com/topic/239925-skywatcher-heritage-virtuoso-controlled-via-bluetooth/page/6/
 Another way to test is to connect to the mount using a terminal program

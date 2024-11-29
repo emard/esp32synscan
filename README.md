@@ -1,10 +1,15 @@
 # ESP32 UART UDP Bridge
 
+
 Micropython asyncio UART to UDP bridge for ESP32.
 Intended use: wireless interface for
-SynScan Virtuoso 90 Heritage telescope mount
-that should be more stable than original
-SynScan WiFi dongle.
+SynScan Virtuoso 90 Heritage telescope mount.
+
+This works as a proof of concept but is unreliable,
+difficult to connect and easy to loose connection.
+Instead of this I recommend
+
+https://github.com/emard/esp32blesynscan
 
 # Synscan Parameters
 
